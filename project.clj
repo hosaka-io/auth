@@ -3,21 +3,39 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-
+  :repositories ^:replace [["releases" "https://artifactory.i.hosaka.io/artifactory/libs-release"]
+                           ["snapshots" "https://artifactory.i.hosaka.io/artifactory/libs-snapshot"]]
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [ring-server "0.5.0"]
-                 [reagent "0.8.0"]
-                 [reagent-utils "0.3.1"]
+                 [org.clojure/clojurescript "1.10.238"
+                  :scope "provided"]
+                 [org.clojure/core.async "0.4.474"]
+
+                 [io.hosaka/common "1.0.0"]
+
                  [ring "1.6.3"]
+                 [ring/ring-core "1.6.2"]
                  [ring/ring-defaults "0.3.1"]
+
                  [compojure "1.6.1"]
                  [hiccup "1.0.5"]
                  [yogthos/config "1.1.1"]
-                 [org.clojure/clojurescript "1.10.238"
-                  :scope "provided"]
+
+                 [bidi "2.1.3"]
                  [secretary "1.2.3"]
                  [venantius/accountant "0.2.4"
-                  :exclusions [org.clojure/tools.reader]]]
+                  :exclusions [org.clojure/tools.reader]]
+                 [reagent "0.8.0"]
+                 [reagent-utils "0.3.1"]
+                 [re-frame "0.10.5"]
+                 [day8.re-frame/http-fx "0.1.6"]
+                 [cljs-ajax "0.7.3"]
+                 [com.cemerick/url "0.1.1"]
+
+                 [org.apache.logging.log4j/log4j-core "2.11.0"]
+                 [org.apache.logging.log4j/log4j-api "2.11.0"]
+                 [org.apache.logging.log4j/log4j-slf4j-impl "2.11.0"]
+
+                 ]
 
   :plugins [[lein-environ "1.1.0"]
             [lein-cljsbuild "1.1.7"]
@@ -55,16 +73,13 @@
             {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
              :figwheel {:on-jsload "io.hosaka.auth.core/mount-root"}
              :compiler
-             {:main "auth.dev"
+             {:main "io.hosaka.auth.dev"
               :asset-path "/js/out"
               :output-to "target/cljsbuild/public/js/app.js"
               :output-dir "target/cljsbuild/public/js/out"
               :source-map true
               :optimizations :none
               :pretty-print  true}}
-
-
-
             }
    }
 
@@ -89,13 +104,10 @@
                                   [figwheel-sidecar "0.5.16"]
                                   [org.clojure/tools.nrepl "0.2.13"]
                                   [com.cemerick/piggieback "0.2.2"]
-                                  [pjstadig/humane-test-output "0.8.3"]
-                                  
- ]
+                                  [pjstadig/humane-test-output "0.8.3"]]
 
                    :source-paths ["env/dev/clj"]
-                   :plugins [[lein-figwheel "0.5.16"]
-]
+                   :plugins [[lein-figwheel "0.5.16"]]
 
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]
