@@ -42,12 +42,9 @@
             [lein-asset-minifier "0.2.7"
              :exclusions [org.clojure/clojure]]]
 
-  :ring {:handler io.hosaka.auth.handler/app
-         :uberwar-name "auth.war"}
-
   :min-lein-version "2.5.0"
   :uberjar-name "auth.jar"
-  :main io.hosaka.auth.server
+  :main io.hosaka.auth
   :clean-targets ^{:protect false}
   [:target-path
    [:cljsbuild :builds :app :compiler :output-dir]
@@ -71,28 +68,17 @@
               :pretty-print  false}}
             :app
             {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
-             :figwheel {:on-jsload "io.hosaka.auth.core/mount-root"}
              :compiler
              {:main "io.hosaka.auth.dev"
-              :asset-path "/js/out"
+              :asset-path "/assets/js/out"
               :output-to "target/cljsbuild/public/js/app.js"
               :output-dir "target/cljsbuild/public/js/out"
+              :preloads [re-frisk.preload]
               :source-map true
               :optimizations :none
               :pretty-print  true}}
             }
    }
-
-  :figwheel
-  {:http-server-root "public"
-   :server-port 3449
-   :nrepl-port 7002
-   :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"
-                      ]
-   :css-dirs ["resources/public/css"]
-   :ring-handler io.hosaka.auth.handler/app}
-
-
 
   :profiles {:dev {:repl-options {:init-ns io.hosaka.auth.repl
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
@@ -101,13 +87,14 @@
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.6.3"]
                                   [prone "1.5.2"]
+                                  [re-frisk "0.5.3"]
                                   [figwheel-sidecar "0.5.16"]
                                   [org.clojure/tools.nrepl "0.2.13"]
                                   [com.cemerick/piggieback "0.2.2"]
                                   [pjstadig/humane-test-output "0.8.3"]]
 
+                   :resource-paths ["env/dev/resources" "resources" "target/cljsbuild" ]
                    :source-paths ["env/dev/clj"]
-                   :plugins [[lein-figwheel "0.5.16"]]
 
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]
