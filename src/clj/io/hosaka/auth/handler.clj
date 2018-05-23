@@ -1,37 +1,87 @@
 (ns io.hosaka.auth.handler
-  (:require [compojure.core :refer [GET defroutes]]
-            [compojure.route :refer [not-found resources]]
-            [hiccup.page :refer [include-js include-css html5]]
-            [io.hosaka.auth.middleware :refer [wrap-middleware]]
-            [config.core :refer [env]]))
-
-(def mount-target
-  [:div#app
-      [:h3 "ClojureScript has not been compiled!"]
-      [:p "please run "
-       [:b "lein figwheel"]
-       " in order to start the compiler"]])
-
-(defn head []
-  [:head
-   [:meta {:charset "utf-8"}]
-   [:meta {:name "viewport"
-           :content "width=device-width, initial-scale=1"}]
-   (include-css (if (env :dev) "/css/site.css" "/css/site.min.css"))])
-
-(defn loading-page []
-  (html5
-    (head)
-    [:body {:class "body-container"}
-     mount-target
-     (include-js "/js/app.js")]))
+  (:require
+            [config.core :refer [env]]
+            [io.hosaka.auth.html :as html]
+            [com.stuartsierra.component :as component]
+            [clojure.data.json :as json]
+            [manifold.deferred :as d]
+            [yada.yada :as yada]
+            [io.hosaka.auth.orchestrator :as orchestrator]))
 
 
-(defroutes routes
-  (GET "/" [] (loading-page))
-  (GET "/about" [] (loading-page))
-  
-  (resources "/")
-  (not-found "Not Found"))
+(defn redirect [orchestrator ctx]
+  (d/chain
+   (orchestrator/get-redirect-url orchestrator)
+   #(assoc (:response ctx)
+          :status 302
+          :headers {"location" %})))
 
-(def app (wrap-middleware #'routes))
+(defn token [orchestrator ctx]
+  (let [code (-> ctx :parameters :query :code)]
+    (d/chain
+     (orchestrator/get-token orchestrator code)
+     (fn [jwt]
+       (assoc (:response ctx)
+              :headers {
+                        "Set-Cookie" (str "access_token=" jwt ";Path=/;domain=.hosaka.io;Max-Age=28800;")
+                        "location" "/"}
+              :status 302
+              :body (hash-map :key jwt :code code))))))
+
+(defn get-user-info [orchestrator ctx]
+  (let [token (:cookies ctx)]
+    (clojure.pprint/pprint ctx)
+    {:user "name" :e "mail"})
+  )
+
+(defn build-routes [orchestrator]
+  ["/" [
+        ["api/user"
+         (yada/resource
+          {:methods
+           {:get
+            {:produces "application/json"
+             :response (partial get-user-info orchestrator)}}})]
+        ["redirect"
+         (yada/resource
+          {:methods
+           {:get
+            {:response (partial redirect orchestrator)
+             :produces #{"text/html"}
+             }}})]
+        ["oauth2"
+         (yada/resource
+          {:parameters {:query {:code String}}
+           :methods
+           {:get
+            {:response (partial token orchestrator)
+             :produces "application/json"
+             }}})]
+        (html/build-routes orchestrator)
+        ]])
+
+(defrecord Handler [orchestrator routes]
+  component/Lifecycle
+
+  (start [this]
+    (assoc this :routes (build-routes orchestrator)))
+
+  (stop [this]
+    (assoc this :routes nil)))
+
+
+(defn new-handler []
+  (component/using
+   (map->Handler {})
+   [:orchestrator]))
+
+
+(comment
+ (defroutes routes
+   (GET "/" [] (loading-page))
+   (GET "/about" [] (loading-page))
+   (resources "/")
+   (not-found "Not Found"))
+
+ [io.hosaka.auth.middleware :refer [wrap-middleware]]
+ (def app (wrap-middleware #'routes)))
