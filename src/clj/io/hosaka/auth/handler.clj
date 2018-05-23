@@ -23,13 +23,25 @@
      (fn [jwt]
        (assoc (:response ctx)
               :headers {
-                        "Set-Cookie" (str "access_token=" jwt ";Path=/;domain=.hosaka.io;Max-Age=3600;")
+                        "Set-Cookie" (str "access_token=" jwt ";Path=/;domain=.hosaka.io;Max-Age=28800;")
                         "location" "/"}
               :status 302
               :body (hash-map :key jwt :code code))))))
 
+(defn get-user-info [orchestrator ctx]
+  (let [token (:cookies ctx)]
+    (clojure.pprint/pprint ctx)
+    {:user "name" :e "mail"})
+  )
+
 (defn build-routes [orchestrator]
   ["/" [
+        ["api/user"
+         (yada/resource
+          {:methods
+           {:get
+            {:produces "application/json"
+             :response (partial get-user-info orchestrator)}}})]
         ["redirect"
          (yada/resource
           {:methods

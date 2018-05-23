@@ -27,7 +27,7 @@
             :iss (:service-id env)
             :iat n
             :jti (str (java.util.UUID/randomUUID))
-            :exp (time/plus n (time/hours 1)))
+            :exp (time/plus n (time/hours 8)))
      key
      {:alg :es256 :header {:kid (:service-id env)}})))
 

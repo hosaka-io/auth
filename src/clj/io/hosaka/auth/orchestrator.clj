@@ -31,6 +31,7 @@
       {
        :sub (:id user_info)
        :name (:name user_info)
-       :email (:username user_info)
-       :roles (:roles user_info)})))
+       :email (:user user_info)
+       :roles (:roles user_info)
+       })))
 
