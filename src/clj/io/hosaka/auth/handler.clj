@@ -20,7 +20,13 @@
   (let [code (-> ctx :parameters :query :code)]
     (d/chain
      (orchestrator/get-token orchestrator code)
-     #(assoc % :code code))))
+     (fn [jwt]
+       (assoc (:response ctx)
+              :headers {
+                        "Set-Cookie" (str "access_token=" jwt ";Path=/;domain=.hosaka.io;Max-Age=3600;")
+                        "location" "/"}
+              :status 302
+              :body (hash-map :key jwt :code code))))))
 
 (defn build-routes [orchestrator]
   ["/" [
@@ -39,9 +45,6 @@
             {:response (partial token orchestrator)
              :produces "application/json"
              }}})]
-
-
-
         (html/build-routes orchestrator)
         ]])
 

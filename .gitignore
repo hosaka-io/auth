@@ -13,3 +13,5 @@ pom.xml.asc
 *.log
 /.env
 /.sass-cache
+config.edn
+/resources/public/css/

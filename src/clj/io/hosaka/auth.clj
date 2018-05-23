@@ -3,10 +3,11 @@
             [com.stuartsierra.component :as component]
             [manifold.deferred :as d]
             [clojure.tools.logging :as log]
-            [io.hosaka.auth.oauth :refer [new-oauth]]
             [io.hosaka.auth.handler :refer [new-handler]]
-            [io.hosaka.auth.orchestrator :refer [new-orchestrator]]
             [io.hosaka.auth.keys :refer [new-keys]]
+            [io.hosaka.auth.oauth :refer [new-oauth]]
+            [io.hosaka.auth.orchestrator :refer [new-orchestrator]]
+            [io.hosaka.auth.user :refer [new-user]]
             [io.hosaka.common.server :refer [new-server]]
             )
   (:gen-class))
@@ -20,6 +21,7 @@
    :handler (new-handler)
    :server (new-server env)
    :keys (new-keys env)
+   :user (new-user env)
    ))
 
 (defn -main [& args]

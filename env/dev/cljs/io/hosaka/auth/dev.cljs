@@ -8,6 +8,6 @@
 
 (enable-console-print!)
 
-[re-frisk.core :as re-frisk]
+(re-frisk/enable-re-frisk!)
 
 (core/init!)
