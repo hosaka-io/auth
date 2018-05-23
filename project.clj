@@ -12,7 +12,11 @@
 
                  [io.hosaka/common "1.0.0"]
 
-                 [ring "1.6.3"]
+                 [buddy/buddy-sign "3.0.0.x"]
+                 [buddy/buddy-core "1.5.0.x"]
+                 [clj-crypto "1.0.2"
+                  :exclusions [org.bouncycastle/bcprov-jdk15on bouncycastle/bcprov-jdk16]]
+
                  [ring/ring-core "1.6.2"]
                  [ring/ring-defaults "0.3.1"]
 
@@ -33,9 +37,7 @@
 
                  [org.apache.logging.log4j/log4j-core "2.11.0"]
                  [org.apache.logging.log4j/log4j-api "2.11.0"]
-                 [org.apache.logging.log4j/log4j-slf4j-impl "2.11.0"]
-
-                 ]
+                 [org.apache.logging.log4j/log4j-slf4j-impl "2.11.0"]]
 
   :plugins [[lein-environ "1.1.0"]
             [lein-cljsbuild "1.1.7"]
@@ -55,7 +57,7 @@
 
   :minify-assets
   {:assets
-   {"resources/public/css/site.min.css" "resources/public/css/site.css"}}
+   {"resources/public/css/main.min.css" "resources/public/css/main.css"}}
 
   :cljsbuild
   {:builds {:min
@@ -80,7 +82,10 @@
             }
    }
 
-  :profiles {:dev {:repl-options {:init-ns io.hosaka.auth.repl
+  :sass {:src "src/sass"
+         :dst "resources/public/css"}
+
+  :profiles {:dev {:repl-options {:init-ns io.hosaka.auth
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
 
                    :dependencies [[binaryage/devtools "0.9.10"]
@@ -95,6 +100,7 @@
 
                    :resource-paths ["env/dev/resources" "resources" "target/cljsbuild" ]
                    :source-paths ["env/dev/clj"]
+                   :plugins [[lein-less "1.7.5"]]
 
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]

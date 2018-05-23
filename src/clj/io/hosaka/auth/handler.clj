@@ -6,16 +6,44 @@
             [clojure.data.json :as json]
             [manifold.deferred :as d]
             [yada.yada :as yada]
+            [io.hosaka.auth.orchestrator :as orchestrator]))
 
 
+(defn redirect [orchestrator ctx]
+  (d/chain
+   (orchestrator/get-redirect-url orchestrator)
+   #(assoc (:response ctx)
+          :status 302
+          :headers {"location" %})))
 
-            ))
+(defn token [orchestrator ctx]
+  (let [code (-> ctx :parameters :query :code)]
+    (d/chain
+     (orchestrator/get-token orchestrator code)
+     #(assoc % :code code))))
 
-
-(defn build-routes [o]
+(defn build-routes [orchestrator]
   ["/" [
-                      (html/build-routes o)
-                      ]])
+        ["redirect"
+         (yada/resource
+          {:methods
+           {:get
+            {:response (partial redirect orchestrator)
+             :produces #{"text/html"}
+             }}})]
+        ["oauth2"
+         (yada/resource
+          {:parameters {:query {:code String}}
+           :methods
+           {:get
+            {:response (partial token orchestrator)
+             :produces "application/json"
+             }}})]
+
+
+
+        (html/build-routes orchestrator)
+        ]])
 
 (defrecord Handler [orchestrator routes]
   component/Lifecycle
@@ -29,8 +57,8 @@
 
 (defn new-handler []
   (component/using
-   (map->Handler {:orchestrator {}})
-   []))
+   (map->Handler {})
+   [:orchestrator]))
 
 
 (comment

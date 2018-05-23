@@ -1,0 +1,36 @@
+body {
+    font-family: 'Helvetica Neue', Verdana, Helvetica, Arial, sans-serif;
+
+    .header {
+        display: flex;
+        flex-direction: row;
+        height: 2.5em;
+
+
+        div {
+            padding: .125em .25em 0em .25em;
+            align-self: flex-end;
+            font-size: 1.5em;
+        }
+
+        .hosaka{
+            font-size: 2em;
+        }
+    }
+
+    .hosaka-nav {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        img {
+            height: 2em;
+            width: 2em;
+            padding: .25em .25em 0.25em 0.25em;
+        }
+    }
+
+    .page {
+        padding-top: 5.5em;
+    }
+}
