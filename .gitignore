@@ -14,4 +14,3 @@ pom.xml.asc
 /.env
 /.sass-cache
 config.edn
-/resources/public/css/
