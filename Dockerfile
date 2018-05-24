@@ -1,5 +1,5 @@
 FROM registry.i.hosaka.io/bootstrap
-COPY ./target/uberjar/auth.jar /srv/auth.jar
+COPY ./target/auth.jar /srv/auth.jar
 WORKDIR /srv
 
 EXPOSE 8080
