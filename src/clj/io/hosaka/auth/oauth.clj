@@ -96,10 +96,10 @@
 
 (defn get-redirect-url [{:keys [conf env] :as oauth}]
   (d/let-flow [authorization_endpoint (d/chain conf :authorization_endpoint)
-               {:keys [oauth-client_id oauth-scopes oauth-redirect]} env]
+               {:keys [oauth-client-id oauth-scopes oauth-redirect]} env]
     (str
      authorization_endpoint
      "?redirect_uri=" (url-encode oauth-redirect)
      "&response_type=code"
-     "&client_id=" oauth-client_id
+     "&client_id=" oauth-client-id
      "&scope=" oauth-scopes)))
