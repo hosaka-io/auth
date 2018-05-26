@@ -9,6 +9,7 @@
                  [org.clojure/clojurescript "1.10.238"
                   :scope "provided"]
                  [org.clojure/core.async "0.4.474"]
+                 [org.clojure/tools.nrepl "0.2.12"]
 
                  [io.hosaka/common "1.0.0"]
 

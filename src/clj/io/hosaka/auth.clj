@@ -1,5 +1,6 @@
 (ns io.hosaka.auth
   (:require [config.core :refer [env]]
+            [clojure.tools.nrepl.server :as nrepl]
             [com.stuartsierra.component :as component]
             [manifold.deferred :as d]
             [clojure.tools.logging :as log]
@@ -23,16 +24,19 @@
    ))
 
 (defonce system (atom {}))
+(defonce repl (atom nil))
 
 (defn -main [& args]
   (let [semaphore (d/deferred)]
     (reset! system (init-system env))
 
     (swap! system component/start)
+    (reset! repl (if-let [nrepl-port (:nrepl-port env)] (nrepl/start-server :port nrepl-port) nil))
     (log/info "Auth Service booted")
     (deref semaphore)
     (log/info "Auth Service going down")
     (component/stop @system)
+    (swap! repl (fn [server] (do (if server (nrepl/stop-server server)) nil)))
 
     (shutdown-agents)
     ))
