@@ -37,10 +37,10 @@
   (let [oauth-keys (->> env keys (filter #(->> % name (re-matches #"^oauth-(.*)"))))]
     (map->OAuth {:env (select-keys env oauth-keys)})))
 
-(defn create-token-post [code {:keys [oauth-client_id oauth-secret oauth-redirect]}]
+(defn create-token-post [code {:keys [oauth-client-id oauth-secret oauth-redirect]}]
   (str
    "code=" (url-encode code)
-   "&client_id=" oauth-client_id
+   "&client_id=" oauth-client-id
    "&client_secret=" oauth-secret
    "&redirect_uri=" (url-encode oauth-redirect)
    "&grant_type=authorization_code"))
