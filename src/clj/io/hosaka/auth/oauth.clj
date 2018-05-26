@@ -1,5 +1,6 @@
 (ns io.hosaka.auth.oauth
   (:require [com.stuartsierra.component :as component]
+            [clojure.tools.logging :as log]
             [clojure.java.io :refer [reader]]
             [aleph.http :as http]
             [manifold.deferred :as d]
@@ -24,6 +25,7 @@
   component/Lifecycle
 
   (start [this]
+    (log/info (str "Loaded OAuth" env) )
     (assoc this
            :keys (atom {})
            :conf (-> env :oauth-configuration get-conf)))
