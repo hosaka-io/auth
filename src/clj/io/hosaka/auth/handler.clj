@@ -29,13 +29,14 @@
                          "location" "/"}
                :status 302
                :body (hash-map :key jwt :code code))))
-     (fn [e]
-       (log/warn e "Error geting OAuth info")
-       (assoc (:response ctx)
-              :status 400
-              (str
-               "Error: "
-               (.getMessage e))))
+     (d/catch 
+         (fn [e]
+           (log/warn e "Error geting OAuth info")
+           (assoc (:response ctx)
+                  :status 400
+                  (str
+                   "Error: "
+                   (.getMessage e)))))
 
      )))
 
