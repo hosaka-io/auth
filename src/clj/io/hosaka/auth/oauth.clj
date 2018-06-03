@@ -25,7 +25,6 @@
   component/Lifecycle
 
   (start [this]
-    (log/info (str "Loaded OAuth" env) )
     (assoc this
            :keys (atom {})
            :conf (-> env :oauth-configuration get-conf)))

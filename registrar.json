@@ -1,0 +1,7 @@
+{
+    "id" : "c17ef582-5ca4-47ec-87d9-175be71c4d10",
+    "parent": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+    "name": "auth",
+    "description": "Authentication Service",
+    "entity_type": "service"
+}
