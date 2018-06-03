@@ -3,6 +3,7 @@
             [config.core :refer [env]]
             [io.hosaka.auth.html :as html]
             [com.stuartsierra.component :as component]
+            [clojure.tools.logging :as log]
             [clojure.data.json :as json]
             [manifold.deferred :as d]
             [yada.yada :as yada]
@@ -18,15 +19,25 @@
 
 (defn token [orchestrator ctx]
   (let [code (-> ctx :parameters :query :code)]
-    (d/chain
+    (->
      (orchestrator/get-token orchestrator code)
-     (fn [jwt]
+     (d/chain
+      (fn [jwt]
+        (assoc (:response ctx)
+               :headers {
+                         "Set-Cookie" (str "access_token=" jwt ";Path=/;domain=.hosaka.io;Max-Age=28800;")
+                         "location" "/"}
+               :status 302
+               :body (hash-map :key jwt :code code))))
+     (fn [e]
+       (log/warn e "Error geting OAuth info")
        (assoc (:response ctx)
-              :headers {
-                        "Set-Cookie" (str "access_token=" jwt ";Path=/;domain=.hosaka.io;Max-Age=28800;")
-                        "location" "/"}
-              :status 302
-              :body (hash-map :key jwt :code code))))))
+              :status 400
+              (str
+               "Error: "
+               (.getMessage e))))
+
+     )))
 
 (defn get-user-info [orchestrator ctx]
   (let [token (:cookies ctx)]
